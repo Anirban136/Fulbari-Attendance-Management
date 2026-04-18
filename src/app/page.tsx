@@ -1,66 +1,47 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main style={{ 
+      height: '100vh', 
+      width: '100vw', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
+      padding: '2rem'
+    }}>
+      <div className="animate-fade-in" style={{ textAlign: 'center', maxWidth: '800px' }}>
+        <h1 className="text-gradient" style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: '800' }}>
+          RestaurantOS
+        </h1>
+        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '3rem' }}>
+          Next-generation workforce management. Accurate attendance, flexible payroll, and real-time insights for your restaurant.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          <Link href="/admin" className="glass-panel" style={{ padding: '2.5rem', display: 'block', transition: 'all 0.3s ease' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
+            <h2 style={{ marginBottom: '0.5rem' }}>Admin Dashboard</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              Manage staff profiles, assign slots, track advances, and run the payroll engine.
+            </p>
+          </Link>
+
+          <Link href="/kiosk" className="glass-panel" style={{ padding: '2.5rem', display: 'block', transition: 'all 0.3s ease' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
+            <h2 style={{ marginBottom: '0.5rem' }}>Staff Kiosk</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              Terminal for staff attendance. QR scanning, PIN verification, and shift/break logging.
+            </p>
+          </Link>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <p style={{ marginTop: '4rem', color: 'var(--text-secondary)', fontSize: '0.75rem', opacity: 0.5 }}>
+          Built with Excellence by Antigravity AI
+        </p>
+      </div>
+    </main>
   );
 }

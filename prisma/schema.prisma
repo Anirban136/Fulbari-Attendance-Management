@@ -1,0 +1,114 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Outlet {
+  id                  String   @id @default(uuid())
+  name                String
+  shiftStartTime      String   // e.g., "09:00"
+  shiftEndTime        String   // e.g., "17:00"
+  expectedWorkHours   Float    // e.g., 8.0
+  timezone            String   @default("UTC")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  slots               StaffSlot[]
+}
+
+model StaffSlot {
+  id                  String   @id @default(uuid())
+  outletId            String
+  name                String   // e.g., "Staff1", "Staff2"
+  qrToken             String   @unique @default(uuid()) // Used for QR code generation
+  createdAt           DateTime @default(now())
+
+  outlet              Outlet   @relation(fields: [outletId], references: [id])
+  profiles            StaffProfile[]
+}
+
+model StaffProfile {
+  id                  String   @id @default(uuid())
+  slotId              String
+  name                String
+  phone               String
+  hashedPin           String
+  monthlySalary       Float
+  joiningDate         DateTime
+  leavingDate         DateTime?
+  isActive            Boolean  @default(true)
+  location            String   @default("Restaurant") // Restaurant, Cafe Hub, Chai Hub
+  createdAt           DateTime @default(now())
+
+  slot                StaffSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  attendances         AttendanceRecord[]
+  advances            Advance[]
+  payrolls            PayrollRecord[]
+}
+
+model AttendanceRecord {
+  id                  String   @id @default(uuid())
+  staffId             String
+  shiftDate           DateTime // date representation without time
+  state               String   @default("NOT_STARTED") // NOT_STARTED, SHIFT_STARTED, ON_BREAK, SHIFT_ENDED
+  startTime           DateTime?
+  endTime             DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  staff               StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  breaks              BreakLog[]
+}
+
+model BreakLog {
+  id                  String   @id @default(uuid())
+  attendanceId        String
+  startTime           DateTime @default(now())
+  endTime             DateTime?
+
+  attendance          AttendanceRecord @relation(fields: [attendanceId], references: [id])
+}
+
+model Advance {
+  id                  String   @id @default(uuid())
+  staffId             String
+  amount              Float
+  date                DateTime @default(now())
+  status              String   @default("PENDING") // PENDING, DEDUCTED
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  staff               StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+}
+
+model PayrollRecord {
+  id                  String   @id @default(uuid())
+  staffId             String
+  monthYear           String   // e.g., "2026-04"
+  strictSalary        Float
+  simpleSalary        Float
+  selectedMode        String?  // STRICT or SIMPLE
+  finalPayable        Float
+  advancesDeducted    Float
+  createdAt           DateTime @default(now())
+
+  staff               StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id                  String   @id @default(uuid())
+  action              String   // e.g., "STAFF_CREATED", "PAYROLL_FINALIZED"
+  entityType          String
+  entityId            String
+  oldValue            String?  // JSON string
+  newValue            String?  // JSON string
+  performedBy         String?
+  createdAt           DateTime @default(now())
+}
+
