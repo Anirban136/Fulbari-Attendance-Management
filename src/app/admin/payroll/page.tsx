@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 export default function PayrollCalculationPage() {
   const [month, setMonth] = useState("2026-04");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleCalculate = async () => {

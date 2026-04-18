@@ -7,7 +7,7 @@ type Step = 'SCAN' | 'PIN' | 'ACTIONS' | 'SUCCESS';
 export default function KioskPage() {
   const [step, setStep] = useState<Step>('SCAN');
   const [qrToken, setQrToken] = useState('');
-  const [slots, setSlots] = useState([]);
+  const [slots, setSlots] = useState<any[]>([]);
   const [staff, setStaff] = useState<any>(null);
   const [pin, setPin] = useState('');
   const [status, setStatus] = useState<any>(null);

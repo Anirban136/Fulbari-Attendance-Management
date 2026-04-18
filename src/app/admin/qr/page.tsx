@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 
 export default function SlotManagement() {
-  const [slots, setSlots] = useState([]);
+  const [slots, setSlots] = useState<any[]>([]);
   const [isSlotModalOpen, setIsSlotModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [newSlotName, setNewSlotName] = useState("");

@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 
 export default function FinancialsManagement() {
-  const [advances, setAdvances] = useState([]);
-  const [staffList, setStaffList] = useState([]);
+  const [advances, setAdvances] = useState<any[]>([]);
+  const [staffList, setStaffList] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({ staffId: "", amount: "" });

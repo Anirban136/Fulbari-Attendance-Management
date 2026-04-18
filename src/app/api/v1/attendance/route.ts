@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const INCLUDE_BREAKS = { breaks: true } as const;
+
 export async function POST(req: Request) {
   try {
     const { staffId, action } = await req.json();
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
       // 1. Fetch current status
       let attendance = await tx.attendanceRecord.findFirst({
         where: { staffId, shiftDate: today },
-        include: { breaks: true }
+        include: INCLUDE_BREAKS
       });
 
       const currentState = attendance?.state || 'NOT_STARTED';
@@ -31,7 +33,8 @@ export async function POST(req: Request) {
               shiftDate: today,
               state: 'SHIFT_STARTED',
               startTime: new Date()
-            }
+            },
+            include: INCLUDE_BREAKS
           });
           break;
 
@@ -44,7 +47,8 @@ export async function POST(req: Request) {
           });
           attendance = await tx.attendanceRecord.update({
             where: { id: attendance!.id },
-            data: { state: 'ON_BREAK' }
+            data: { state: 'ON_BREAK' },
+            include: INCLUDE_BREAKS
           });
           break;
 
@@ -64,7 +68,8 @@ export async function POST(req: Request) {
           }
           attendance = await tx.attendanceRecord.update({
             where: { id: attendance!.id },
-            data: { state: 'SHIFT_STARTED' }
+            data: { state: 'SHIFT_STARTED' },
+            include: INCLUDE_BREAKS
           });
           break;
 
@@ -74,7 +79,8 @@ export async function POST(req: Request) {
           }
           attendance = await tx.attendanceRecord.update({
             where: { id: attendance!.id },
-            data: { state: 'SHIFT_ENDED', endTime: new Date() }
+            data: { state: 'SHIFT_ENDED', endTime: new Date() },
+            include: INCLUDE_BREAKS
           });
           break;
 

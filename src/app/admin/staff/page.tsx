@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function StaffManagement() {
-  const [staffList, setStaffList] = useState([]);
-  const [slots, setSlots] = useState([]);
-  const [availableSlots, setAvailableSlots] = useState([]);
+  const [staffList, setStaffList] = useState<any[]>([]);
+  const [slots, setSlots] = useState<any[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<any>(null);
