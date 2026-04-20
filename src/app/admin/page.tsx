@@ -1,33 +1,43 @@
 import React from "react";
 
-
 export const dynamic = 'force-dynamic';
 
 import prisma from '../../lib/prisma';
+import DashboardStats from "./DashboardStats";
+import EmergencyPopup from "./EmergencyPopup";
 
 export default async function AdminDashboard() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const activeStaffCount = await prisma.attendanceRecord.count({
+  const activeStaffRecords = await prisma.attendanceRecord.findMany({
     where: {
       shiftDate: { gte: today },
       state: 'SHIFT_STARTED'
-    }
+    },
+    include: { staff: true }
   });
 
-  const onBreakCount = await prisma.attendanceRecord.count({
+  const onBreakStaffRecords = await prisma.attendanceRecord.findMany({
     where: {
       shiftDate: { gte: today },
       state: 'ON_BREAK'
+    },
+    include: { 
+      staff: true,
+      breaks: {
+        orderBy: { startTime: 'desc' },
+        take: 1
+      }
     }
   });
 
-  const pendingAdvancesCount = await prisma.advance.count({
+  const pendingAdvancesRecords = await prisma.advance.findMany({
     where: {
       status: 'PENDING',
       isActive: true
-    }
+    },
+    include: { staff: true }
   });
 
   const recentActivity = await prisma.attendanceRecord.findMany({
@@ -41,6 +51,48 @@ export default async function AdminDashboard() {
       }
     }
   });
+
+  const timeOptions: Intl.DateTimeFormatOptions = { 
+    timeZone: 'Asia/Kolkata', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  };
+
+  const activeStaff = activeStaffRecords.map(r => ({ 
+    id: r.staff.id, 
+    name: r.staff.name,
+    extra: r.startTime ? `Shift started: ${r.startTime.toLocaleTimeString('en-IN', timeOptions)}` : ''
+  }));
+  
+  const onBreakStaff = onBreakStaffRecords.map(r => {
+    const latestBreak = r.breaks[0];
+    return { 
+      id: r.staff.id, 
+      name: r.staff.name,
+      extra: latestBreak?.startTime ? `Break started: ${latestBreak.startTime.toLocaleTimeString('en-IN', timeOptions)}` : ''
+    };
+  });
+  
+  // Calculate high advance alerts
+  const staffAdvancesMap = new Map<string, { name: string, total: number, salary: number }>();
+  pendingAdvancesRecords.forEach(a => {
+    const existing = staffAdvancesMap.get(a.staffId) || { name: a.staff.name, total: 0, salary: a.staff.monthlySalary };
+    existing.total += a.amount;
+    staffAdvancesMap.set(a.staffId, existing);
+  });
+
+  const highAdvanceAlerts: { name: string, percent: number }[] = [];
+  staffAdvancesMap.forEach(data => {
+    if (data.total > data.salary * 0.5 && data.salary > 0) {
+      highAdvanceAlerts.push({ name: data.name, percent: Math.round((data.total / data.salary) * 100) });
+    }
+  });
+
+  const pendingAdvances = pendingAdvancesRecords.map(a => ({ 
+    id: a.id, 
+    name: a.staff.name, 
+    extra: `₹${a.amount}` 
+  }));
 
   const formatState = (state: string) => {
     switch (state) {
@@ -62,22 +114,15 @@ export default async function AdminDashboard() {
           Export Report
         </button>
       </header>
+      
+      <EmergencyPopup alerts={highAdvanceAlerts} />
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
-        <div className="glass-panel text-center" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <h3 style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Active Staff Today</h3>
-          <p className="text-gradient" style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0' }}>{activeStaffCount}</p>
-        </div>
-        <div className="glass-panel text-center" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <h3 style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>On Break</h3>
-          <p className="text-gradient" style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0' }}>{onBreakCount}</p>
-        </div>
-        <div className="glass-panel text-center" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <h3 style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Pending Advances</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--brand-secondary)', margin: '0' }}>{pendingAdvancesCount}</p>
-        </div>
-      </div>
+      <DashboardStats 
+        activeStaff={activeStaff}
+        onBreakStaff={onBreakStaff}
+        pendingAdvances={pendingAdvances}
+      />
 
       {/* Recent Activity Table */}
       <div className="glass-panel">
@@ -99,7 +144,7 @@ export default async function AdminDashboard() {
                 <td style={{ padding: '1rem 0' }}>{activity.staff.slot.name}</td>
                 <td style={{ padding: '1rem 0' }}>{formatState(activity.state)}</td>
                 <td style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>
-                  {new Date(activity.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(activity.updatedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
                 </td>
               </tr>
             ))}

@@ -65,12 +65,10 @@ export default function PayrollCalculationPage() {
                   <td style={{ padding: '1rem', fontWeight: '600', color: '#10b981' }}>₹{r.inHandBase}</td>
                   <td style={{ padding: '1rem' }}>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Raw: ₹{r.strictRaw}</div>
-                    <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>PF: -₹{r.strictPF}</div>
                     <div style={{ fontWeight: '600' }}>Net: ₹{r.strictFinal}</div>
                   </td>
                   <td style={{ padding: '1rem' }}>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Raw: ₹{r.simpleRaw}</div>
-                    <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>PF: -₹{r.simplePF}</div>
                     <div style={{ fontWeight: '600' }}>Net: ₹{r.simpleFinal}</div>
                   </td>
                   <td style={{ padding: '1rem', color: 'var(--brand-secondary)' }}>-₹{r.totalAdvance}</td>

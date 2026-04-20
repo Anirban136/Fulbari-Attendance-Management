@@ -59,9 +59,13 @@ export async function GET(req: Request) {
         totalPayableHours += Math.min(workTimeHours, expectedHours);
       });
 
-      const hourlyRate = staff.monthlySalary / (workingDaysInMonth * expectedHours);
+      const pfRate = 0.12;
+      const basePF = staff.monthlySalary * pfRate;
+      const inHandBase = staff.monthlySalary - basePF;
+      
+      const hourlyRate = inHandBase / (workingDaysInMonth * expectedHours);
       const strictRawSalary = totalPayableHours * hourlyRate;
-
+      
       // Calculate Simple Stats
       let simpleActiveDays = 0;
       staff.attendances.forEach(att => {
@@ -72,16 +76,13 @@ export async function GET(req: Request) {
         simpleActiveDays += 1; 
       });
 
-      const perDaySalary = staff.monthlySalary / workingDaysInMonth;
+      const perDaySalary = inHandBase / workingDaysInMonth;
       const simpleRawSalary = simpleActiveDays * perDaySalary;
 
       const totalAdvance = staff.advances.reduce((acc, curr) => acc + curr.amount, 0);
 
-      const pfRate = 0.12;
-      const strictPF = strictRawSalary * pfRate;
-      const simplePF = simpleRawSalary * pfRate;
-      const basePF = staff.monthlySalary * pfRate;
-      const inHandBase = staff.monthlySalary - basePF;
+      const strictPF = 0;
+      const simplePF = 0;
 
       return {
         staffId: staff.id,
@@ -95,8 +96,8 @@ export async function GET(req: Request) {
         strictPF: strictPF.toFixed(2),
         simplePF: simplePF.toFixed(2),
         totalAdvance: totalAdvance.toFixed(2),
-        strictFinal: Math.max(0, strictRawSalary - strictPF - totalAdvance).toFixed(2),
-        simpleFinal: Math.max(0, simpleRawSalary - simplePF - totalAdvance).toFixed(2),
+        strictFinal: Math.max(0, strictRawSalary - totalAdvance).toFixed(2),
+        simpleFinal: Math.max(0, simpleRawSalary - totalAdvance).toFixed(2),
         warnings: {
           highAdvance: totalAdvance > (staff.monthlySalary * 0.5),
           lowWork: actualWorkHours < (totalPayableHours * 0.8) // simplified

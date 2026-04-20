@@ -9,6 +9,17 @@ export async function POST(req: Request) {
   try {
     const { staffId, action } = await req.json();
     
+    // Calculate current time in IST (UTC + 5:30)
+    const istNow = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
+    const istHour = istNow.getUTCHours();
+    
+    // Restrict punches to between 12 PM (noon) and 12 AM (midnight) IST
+    if (istHour < 12) {
+      return NextResponse.json({ 
+        error: 'Attendance can only be punched between 12 PM and 12 AM (IST).' 
+      }, { status: 400 });
+    }
+
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
