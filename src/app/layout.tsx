@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "RestaurantOS | Dashboard",
-  description: "Next-generation workforce management for modern restaurants.",
+  title: "Fulbari Restora | Attendance Dashboard",
+  description: "Attendance management for Fulbari Restora.",
 };
 
 export default function RootLayout({

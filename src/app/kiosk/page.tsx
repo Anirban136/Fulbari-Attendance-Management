@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { Scanner } from '@yudiel/react-qr-scanner';
 
 type Step = 'SCAN' | 'PIN' | 'ACTIONS' | 'SUCCESS';
 
@@ -135,7 +136,17 @@ export default function KioskPage() {
             <h1 className="text-gradient">Scan QR Code</h1>
             <p style={{ color: 'var(--text-secondary)' }}>Position the slot QR code in front of the camera</p>
             
-            <div style={{ padding: '2rem', border: '2px dashed var(--border-color)', borderRadius: '20px' }}>
+            <div style={{ padding: '1rem', border: '2px dashed var(--border-color)', borderRadius: '20px', overflow: 'hidden' }}>
+              <div style={{ borderRadius: '12px', overflow: 'hidden', marginBottom: '1rem' }}>
+                <Scanner 
+                  onScan={(result) => {
+                    if (result && result.length > 0) {
+                      handleScan(result[0].rawValue);
+                    }
+                  }}
+                  onError={(error: unknown) => console.log((error as Error)?.message || error)}
+                />
+              </div>
               {/* Simulation buttons */}
               <p style={{ fontSize: '0.75rem', marginBottom: '1rem', color: 'var(--text-secondary)' }}>Simulate Scan:</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
@@ -252,7 +263,7 @@ export default function KioskPage() {
       </div>
       
       <p style={{ marginTop: '2rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-        RestaurantOS v1.0 • Kiosk Terminal
+        Fulbari Restora v1.0 • Kiosk Terminal
       </p>
     </div>
   );

@@ -22,13 +22,21 @@ export default function StaffManagement() {
 
   const fetchData = async () => {
     try {
-      const staffRes = await fetch("/api/v1/staff");
-      const slotsRes = await fetch("/api/v1/slots");
-      const availableRes = await fetch("/api/v1/slots?available=true");
+      const [staffRes, slotsRes, availableRes] = await Promise.all([
+        fetch("/api/v1/staff"),
+        fetch("/api/v1/slots"),
+        fetch("/api/v1/slots?available=true")
+      ]);
       
-      setStaffList(await staffRes.json());
-      setSlots(await slotsRes.json());
-      setAvailableSlots(await availableRes.json());
+      const [staffData, slotsData, availableData] = await Promise.all([
+        staffRes.json(),
+        slotsRes.json(),
+        availableRes.json()
+      ]);
+
+      setStaffList(staffData);
+      setSlots(slotsData);
+      setAvailableSlots(availableData);
     } catch (e) {
       console.error(e);
     }
@@ -261,6 +269,10 @@ export default function StaffManagement() {
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Full Name</label>
                 <input name="name" required className="input-base" value={editingStaff.name} onChange={handleEditInputChange} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Reset PIN (optional)</label>
+                <input name="pin" type="password" maxLength={4} className="input-base" placeholder="Leave blank to skip" value={editingStaff.pin || ""} onChange={handleEditInputChange} />
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Monthly Salary (₹)</label>

@@ -14,10 +14,10 @@ export default function Home() {
     }}>
       <div className="animate-fade-in" style={{ textAlign: 'center', maxWidth: '800px' }}>
         <h1 className="text-gradient" style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: '800' }}>
-          RestaurantOS
+          Fulbari Restora Attendance
         </h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '3rem' }}>
-          Next-generation workforce management. Accurate attendance, flexible payroll, and real-time insights for your restaurant.
+          Attendance management. Accurate tracking, flexible payroll, and real-time insights for Fulbari Restora.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>

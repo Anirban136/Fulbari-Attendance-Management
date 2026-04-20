@@ -48,3 +48,5 @@ prisma/dev.db-journal
 
 # Debug scripts
 debug_payroll.ts
+
+.vercel

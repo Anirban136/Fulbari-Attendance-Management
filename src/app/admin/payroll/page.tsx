@@ -43,6 +43,9 @@ export default function PayrollCalculationPage() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                 <th style={{ padding: '1rem' }}>Staff</th>
+                <th style={{ padding: '1rem' }}>Base Salary</th>
+                <th style={{ padding: '1rem' }}>PF (12%)</th>
+                <th style={{ padding: '1rem' }}>Inhand Base</th>
                 <th style={{ padding: '1rem' }}>Strict Salary</th>
                 <th style={{ padding: '1rem' }}>Simple Salary</th>
                 <th style={{ padding: '1rem' }}>Advances</th>
@@ -57,12 +60,17 @@ export default function PayrollCalculationPage() {
                     <div style={{ fontWeight: '600' }}>{r.name}</div>
                     {r.warnings.highAdvance && <span style={{ fontSize: '0.75rem', color: '#ef4444' }}>⚠️ High Advance</span>}
                   </td>
+                  <td style={{ padding: '1rem' }}>₹{r.monthlySalary}</td>
+                  <td style={{ padding: '1rem', color: '#ef4444' }}>-₹{r.pfAmount}</td>
+                  <td style={{ padding: '1rem', fontWeight: '600', color: '#10b981' }}>₹{r.inHandBase}</td>
                   <td style={{ padding: '1rem' }}>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Raw: ₹{r.strictRaw}</div>
+                    <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>PF: -₹{r.strictPF}</div>
                     <div style={{ fontWeight: '600' }}>Net: ₹{r.strictFinal}</div>
                   </td>
                   <td style={{ padding: '1rem' }}>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Raw: ₹{r.simpleRaw}</div>
+                    <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>PF: -₹{r.simplePF}</div>
                     <div style={{ fontWeight: '600' }}>Net: ₹{r.simpleFinal}</div>
                   </td>
                   <td style={{ padding: '1rem', color: 'var(--brand-secondary)' }}>-₹{r.totalAdvance}</td>

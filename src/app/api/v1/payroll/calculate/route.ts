@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+
+import prisma from '../../../../../lib/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -77,15 +77,26 @@ export async function GET(req: Request) {
 
       const totalAdvance = staff.advances.reduce((acc, curr) => acc + curr.amount, 0);
 
+      const pfRate = 0.12;
+      const strictPF = strictRawSalary * pfRate;
+      const simplePF = simpleRawSalary * pfRate;
+      const basePF = staff.monthlySalary * pfRate;
+      const inHandBase = staff.monthlySalary - basePF;
+
       return {
         staffId: staff.id,
         name: staff.name,
         month,
+        monthlySalary: staff.monthlySalary,
+        pfAmount: basePF.toFixed(2),
+        inHandBase: inHandBase.toFixed(2),
         strictRaw: strictRawSalary.toFixed(2),
         simpleRaw: simpleRawSalary.toFixed(2),
+        strictPF: strictPF.toFixed(2),
+        simplePF: simplePF.toFixed(2),
         totalAdvance: totalAdvance.toFixed(2),
-        strictFinal: Math.max(0, strictRawSalary - totalAdvance).toFixed(2),
-        simpleFinal: Math.max(0, simpleRawSalary - totalAdvance).toFixed(2),
+        strictFinal: Math.max(0, strictRawSalary - strictPF - totalAdvance).toFixed(2),
+        simpleFinal: Math.max(0, simpleRawSalary - simplePF - totalAdvance).toFixed(2),
         warnings: {
           highAdvance: totalAdvance > (staff.monthlySalary * 0.5),
           lowWork: actualWorkHours < (totalPayableHours * 0.8) // simplified

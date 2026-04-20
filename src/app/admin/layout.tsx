@@ -38,7 +38,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside className="admin-sidebar glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderBottom: 'none', borderLeft: 'none' }}>
         <h2 className="text-gradient" style={{ marginBottom: "1rem" }}>
-          RestaurantOS
+          Fulbari Restora
         </h2>
 
         {/* Theme Toggle */}
