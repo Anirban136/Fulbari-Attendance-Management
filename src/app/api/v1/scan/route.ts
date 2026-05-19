@@ -21,10 +21,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid QR Token or no active staff assigned' }, { status: 404 });
     }
 
+    const staff = slot.profiles[0];
+    const authenticatorCount = await prisma.authenticator.count({
+      where: { staffId: staff.id }
+    });
+
     return NextResponse.json({ 
       slotName: slot.name,
-      staffName: slot.profiles[0].name,
-      staffId: slot.profiles[0].id
+      staffName: staff.name,
+      staffId: staff.id,
+      hasBiometrics: authenticatorCount > 0
     });
   } catch (error) {
     console.error('API /scan Error:', error);

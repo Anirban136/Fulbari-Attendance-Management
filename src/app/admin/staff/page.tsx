@@ -103,190 +103,230 @@ export default function StaffManagement() {
   };
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Staff Management</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Assign staff to slots and manage profiles. Manage physical slots in <Link href="/admin/qr" style={{ color: 'var(--brand-primary)', textDecoration: 'underline' }}>Slot QRs</Link>.</p>
+          <h1 className="text-gradient" style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>Personnel Hub</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Manage your workforce deployment and slot assignments.</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn" onClick={() => setIsAddModalOpen(true)}>
-            + Add New Staff
-          </button>
-        </div>
+        <button className="btn-modern btn-primary" onClick={() => setIsAddModalOpen(true)}>
+          <span style={{ fontSize: '1.2rem' }}>+</span> Onboard New Staff
+        </button>
       </header>
 
-      {/* Staff Table */}
-      <div className="glass-panel">
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Name</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Location</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Assigned Slot</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Salary Base</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Status</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {staffList.map((staff: any) => (
-              <tr key={staff.id} style={{ borderBottom: '1px solid var(--border-color)', opacity: staff.isActive ? 1 : 0.6 }}>
-                <td style={{ padding: '1rem 0', fontWeight: '500' }}>
-                  {staff.name}
-                  {!staff.isActive && <span style={{ marginLeft: '0.5rem', fontSize: '0.75rem', background: 'var(--background-surface-hover)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>Inactive</span>}
-                </td>
-                <td style={{ padding: '1rem 0' }}>{staff.location || "N/A"}</td>
-                <td style={{ padding: '1rem 0' }}>
-                  <span style={{ background: 'var(--background-surface-hover)', border: '1px solid var(--border-color)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>
-                    {staff.slot?.name || "Unassigned"}
-                  </span>
-                </td>
-                <td style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>₹{staff.monthlySalary}</td>
-                <td style={{ padding: '1rem 0' }}>
-                  <span style={{ color: staff.isActive ? '#10b981' : '#ef4444' }}>
-                    {staff.isActive ? 'Active' : 'Offline'}
-                  </span>
-                </td>
-                <td style={{ padding: '1rem 0', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <Link href={`/admin/staff/${staff.id}`} style={{ color: 'var(--brand-primary)', fontWeight: 'bold', fontSize: '0.875rem' }}>
-                      View Profile
-                    </Link>
-                    <button onClick={() => { setEditingStaff(staff); setIsEditModalOpen(true); }} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem' }}>
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(staff.id, staff.name)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.875rem' }}>
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {staffList.length === 0 && (
+      {/* Staff List */}
+      <section>
+        <div className="table-container glass">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={6} style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  No staff members added yet.
-                </td>
+                <th>Personnel</th>
+                <th>Work Location</th>
+                <th>Assigned Slot</th>
+                <th>Base Salary</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Management</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {staffList.map((staff: any) => (
+                <tr key={staff.id} style={{ opacity: staff.isActive ? 1 : 0.5 }}>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ width: '32px', height: '32px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: 'var(--brand-primary-light)' }}>
+                        {staff.name.charAt(0)}
+                      </div>
+                      <span style={{ fontWeight: '600' }}>{staff.name}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ fontSize: '0.85rem' }}>{staff.location || "Default"}</span>
+                  </td>
+                  <td>
+                    <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.8rem', fontWeight: '500' }}>
+                      {staff.slot?.name || "Pending Slot"}
+                    </span>
+                  </td>
+                  <td style={{ fontWeight: '500' }}>₹{staff.monthlySalary}</td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: staff.isActive ? 'var(--brand-accent)' : 'var(--brand-secondary)' }}></div>
+                      <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{staff.isActive ? 'Active' : 'Inactive'}</span>
+                    </div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <Link href={`/admin/staff/${staff.id}`} className="btn-modern btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
+                        Profile
+                      </Link>
+                      <button onClick={() => { setEditingStaff(staff); setIsEditModalOpen(true); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(staff.id, staff.name)} style={{ background: 'none', border: 'none', color: 'var(--brand-secondary)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', opacity: 0.7 }}>
+                        Drop
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {staffList.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>👥</div>
+                    No staff records found. Start by onboarding someone.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      {/* Add Staff Modal */}
+      {/* Modern Add Staff Modal */}
       {isAddModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', background: 'var(--background-base)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2>Add New Staff</h2>
-              <button onClick={() => setIsAddModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--text-secondary)' }}>&times;</button>
+        <div className="modal-overlay" onClick={() => setIsAddModalOpen(false)}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 className="text-gradient" style={{ fontSize: '1.75rem' }}>Onboard Staff</h2>
+              <button onClick={() => setIsAddModalOpen(false)} className="modal-close">&times;</button>
             </div>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Location</label>
-                <select name="location" required className="input-base" value={formData.location} onChange={handleInputChange}>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Cafe Hub">Cafe Hub</option>
-                  <option value="Chai Hub">Chai Hub</option>
-                </select>
+            
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Work Location</label>
+                  <select name="location" required className="input-modern" value={formData.location} onChange={handleInputChange}>
+                    <option value="Restaurant">Restaurant</option>
+                    <option value="Cafe Hub">Cafe Hub</option>
+                    <option value="Chai Hub">Chai Hub</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Slot Assignment</label>
+                  <select name="slotId" required className="input-modern" value={formData.slotId} onChange={handleInputChange}>
+                    <option value="">Choose Slot</option>
+                    {availableSlots.map((slot: any) => (
+                      <option key={slot.id} value={slot.id}>{slot.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Slot Assignment</label>
-                <select name="slotId" required className="input-base" value={formData.slotId} onChange={handleInputChange}>
-                  <option value="">Select a Slot...</option>
-                  {availableSlots.map((slot: any) => (
-                    <option key={slot.id} value={slot.id}>{slot.name}</option>
-                  ))}
-                </select>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Full Legal Name</label>
+                <input name="name" required className="input-modern" placeholder="e.g. John Smith" value={formData.name} onChange={handleInputChange} />
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Full Name</label>
-                <input name="name" required className="input-base" placeholder="John Doe" value={formData.name} onChange={handleInputChange} />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Phone Identity</label>
+                  <input name="phone" required className="input-modern" placeholder="+91 00000 00000" value={formData.phone} onChange={handleInputChange} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Security PIN (4 Digits)</label>
+                  <input name="pin" required type="password" maxLength={4} className="input-modern" placeholder="••••" value={formData.pin} onChange={handleInputChange} />
+                </div>
               </div>
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Phone Number</label>
-                <input name="phone" required className="input-base" placeholder="+1234567890" value={formData.phone} onChange={handleInputChange} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Login PIN (4 digits)</label>
-                <input name="pin" required type="password" maxLength={4} className="input-base" placeholder="****" value={formData.pin} onChange={handleInputChange} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Monthly Salary (₹)</label>
-                <input name="monthlySalary" required type="number" step="1" className="input-base" placeholder="25000" value={formData.monthlySalary} onChange={handleInputChange} />
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Monthly Salary Commitment (₹)</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>₹</span>
+                  <input name="monthlySalary" required type="number" step="1" className="input-modern" style={{ paddingLeft: '2rem' }} placeholder="25000" value={formData.monthlySalary} onChange={handleInputChange} />
+                </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="submit" className="btn" style={{ flex: 1 }}>
-                  Save Profile
-                </button>
-              </div>
+              <button type="submit" className="btn-modern btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
+                Finalize Onboarding
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Edit Staff Modal */}
+      {/* Modern Edit Staff Modal */}
       {isEditModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', background: 'var(--background-base)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2>Edit Staff</h2>
-              <button onClick={() => { setIsEditModalOpen(false); setEditingStaff(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--text-secondary)' }}>&times;</button>
+        <div className="modal-overlay" onClick={() => { setIsEditModalOpen(false); setEditingStaff(null); }}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 className="text-gradient" style={{ fontSize: '1.75rem' }}>Update Profile</h2>
+              <button onClick={() => { setIsEditModalOpen(false); setEditingStaff(null); }} className="modal-close">&times;</button>
             </div>
-            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--background-surface)', padding: '1rem', borderRadius: '8px' }}>
+            
+            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
                 <div>
-                  <label style={{ display: 'block', fontWeight: 'bold' }}>Active Status</label>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Individual slot will be freed if deactivated.</p>
+                  <label style={{ display: 'block', fontWeight: '700', fontSize: '0.9rem' }}>Active Employment</label>
+                  <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Toggle to disable account and free slot.</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  name="isActive" 
-                  checked={editingStaff.isActive} 
-                  onChange={handleEditInputChange}
-                  style={{ width: '1.5rem', height: '1.5rem', accentColor: 'var(--brand-primary)' }}
-                />
+                <div 
+                  onClick={() => setEditingStaff({...editingStaff, isActive: !editingStaff.isActive})}
+                  style={{ 
+                    width: '48px', 
+                    height: '24px', 
+                    background: editingStaff.isActive ? 'var(--brand-accent)' : 'rgba(255,255,255,0.05)', 
+                    borderRadius: '20px', 
+                    position: 'relative', 
+                    cursor: 'pointer',
+                    border: '1px solid var(--glass-border)',
+                    transition: 'background 0.3s'
+                  }}
+                >
+                  <div style={{ 
+                    width: '18px', 
+                    height: '18px', 
+                    background: 'white', 
+                    borderRadius: '50%', 
+                    position: 'absolute', 
+                    top: '2px', 
+                    left: editingStaff.isActive ? '26px' : '2px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Location</label>
+                  <select name="location" required className="input-modern" value={editingStaff.location} onChange={handleEditInputChange}>
+                    <option value="Restaurant">Restaurant</option>
+                    <option value="Cafe Hub">Cafe Hub</option>
+                    <option value="Chai Hub">Chai Hub</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Slot Assignment</label>
+                  <select name="slotId" required className="input-modern" value={editingStaff.slotId} onChange={handleEditInputChange} disabled={!editingStaff.isActive}>
+                    {slots.map((slot: any) => {
+                      const isOtherAssigned = staffList.some(s => s.slotId === slot.id && s.id !== editingStaff.id && s.isActive);
+                      if (isOtherAssigned) return null;
+                      return <option key={slot.id} value={slot.id}>{slot.name}</option>;
+                    })}
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Location</label>
-                <select name="location" required className="input-base" value={editingStaff.location} onChange={handleEditInputChange}>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Cafe Hub">Cafe Hub</option>
-                  <option value="Chai Hub">Chai Hub</option>
-                </select>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Legal Name</label>
+                <input name="name" required className="input-modern" value={editingStaff.name} onChange={handleEditInputChange} />
               </div>
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Slot Assignment</label>
-                <select name="slotId" required className="input-base" value={editingStaff.slotId} onChange={handleEditInputChange} disabled={!editingStaff.isActive}>
-                  {slots.map((slot: any) => {
-                    const isOtherAssigned = staffList.some(s => s.slotId === slot.id && s.id !== editingStaff.id && s.isActive);
-                    if (isOtherAssigned) return null;
-                    return <option key={slot.id} value={slot.id}>{slot.name}</option>;
-                  })}
-                </select>
-                {!editingStaff.isActive && <p style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '0.25rem' }}>Re-enable account to assign a slot.</p>}
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Security Override PIN</label>
+                <input name="pin" type="password" maxLength={4} className="input-modern" placeholder="Leave blank to maintain current" value={editingStaff.pin || ""} onChange={handleEditInputChange} />
               </div>
+
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Full Name</label>
-                <input name="name" required className="input-base" value={editingStaff.name} onChange={handleEditInputChange} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Reset PIN (optional)</label>
-                <input name="pin" type="password" maxLength={4} className="input-base" placeholder="Leave blank to skip" value={editingStaff.pin || ""} onChange={handleEditInputChange} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Monthly Salary (₹)</label>
-                <input name="monthlySalary" required type="number" step="1" className="input-base" value={editingStaff.monthlySalary} onChange={handleEditInputChange} />
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Adjusted Base Salary (₹)</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>₹</span>
+                  <input name="monthlySalary" required type="number" step="1" className="input-modern" style={{ paddingLeft: '2rem' }} value={editingStaff.monthlySalary} onChange={handleEditInputChange} />
+                </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="submit" className="btn" style={{ flex: 1 }}>
-                  Update Profile
-                </button>
-              </div>
+              <button type="submit" className="btn-modern btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
+                Apply Changes
+              </button>
             </form>
           </div>
         </div>

@@ -2,45 +2,98 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main style={{ 
-      height: '100vh', 
-      width: '100vw', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'radial-gradient(circle at center, #1e293b 0%, #0f172a 100%)',
-      padding: '2rem'
-    }}>
-      <div className="animate-fade-in" style={{ textAlign: 'center', maxWidth: '800px' }}>
-        <h1 className="text-gradient" style={{ fontSize: '4rem', marginBottom: '1rem', fontWeight: '800' }}>
-          Fulbari Restora Attendance
-        </h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '3rem' }}>
-          Attendance management. Accurate tracking, flexible payroll, and real-time insights for Fulbari Restora.
-        </p>
+    <main className="animate-slide-up">
+      <div className="bg-mesh" />
+      
+      <div className="container-main" style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        textAlign: 'center'
+      }}>
+        <div style={{ marginBottom: '4rem' }}>
+          <span className="glass" style={{ 
+            padding: '0.5rem 1rem', 
+            borderRadius: '100px', 
+            fontSize: '0.8rem', 
+            fontWeight: '600',
+            color: 'var(--brand-primary-light)',
+            marginBottom: '2rem',
+            display: 'inline-block'
+          }}>
+            ✨ Next Generation Attendance
+          </span>
+          <h1 className="text-gradient" style={{ 
+            fontSize: 'clamp(2.5rem, 8vw, 5rem)', 
+            lineHeight: '1.1',
+            marginBottom: '1.5rem'
+          }}>
+            Fulbari Restora<br/>Attendance
+          </h1>
+          <p style={{ 
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)', 
+            color: 'var(--text-muted)', 
+            maxWidth: '600px',
+            margin: '0 auto'
+          }}>
+            A precision-engineered terminal for modern restaurants. 
+            Real-time tracking, automated payroll, and seamless staff management.
+          </p>
+        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          <Link href="/admin" className="glass-panel" style={{ padding: '2.5rem', display: 'block', transition: 'all 0.3s ease' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚙️</div>
-            <h2 style={{ marginBottom: '0.5rem' }}>Admin Dashboard</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              Manage staff profiles, assign slots, track advances, and run the payroll engine.
+        <div className="grid-auto" style={{ width: '100%', maxWidth: '900px' }}>
+          <Link href="/admin" className="glass glass-hover" style={{ padding: '3rem 2rem', textAlign: 'left' }}>
+            <div style={{ 
+              width: '60px', 
+              height: '60px', 
+              background: 'rgba(99, 102, 241, 0.1)', 
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem',
+              marginBottom: '1.5rem'
+            }}>
+              ⚙️
+            </div>
+            <h2 style={{ marginBottom: '0.75rem', fontSize: '1.5rem' }}>Admin Portal</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              Full control over operations. Manage staff, analyze financials, and finalize payroll records.
             </p>
+            <div style={{ marginTop: '2rem', fontWeight: '600', color: 'var(--brand-primary-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              Open Dashboard <span>→</span>
+            </div>
           </Link>
 
-          <Link href="/kiosk" className="glass-panel" style={{ padding: '2.5rem', display: 'block', transition: 'all 0.3s ease' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
-            <h2 style={{ marginBottom: '0.5rem' }}>Staff Kiosk</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              Terminal for staff attendance. QR scanning, PIN verification, and shift/break logging.
+          <Link href="/kiosk" className="glass glass-hover" style={{ padding: '3rem 2rem', textAlign: 'left' }}>
+            <div style={{ 
+              width: '60px', 
+              height: '60px', 
+              background: 'rgba(244, 63, 94, 0.1)', 
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem',
+              marginBottom: '1.5rem'
+            }}>
+              📱
+            </div>
+            <h2 style={{ marginBottom: '0.75rem', fontSize: '1.5rem' }}>Staff Kiosk</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
+              Touch-optimized terminal for daily clock-ins. Fingerprint-secured biometric attendance logging.
             </p>
+            <div style={{ marginTop: '2rem', fontWeight: '600', color: 'var(--brand-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              Launch Terminal <span>→</span>
+            </div>
           </Link>
         </div>
 
-        <p style={{ marginTop: '4rem', color: 'var(--text-secondary)', fontSize: '0.75rem', opacity: 0.5 }}>
-          Built with Excellence by Antigravity AI
-        </p>
+        <footer style={{ marginTop: '6rem', opacity: 0.5, fontSize: '0.8rem' }}>
+          <p>© 2026 Fulbari Restora • Powered by Antigravity AI Engine</p>
+        </footer>
       </div>
     </main>
   );

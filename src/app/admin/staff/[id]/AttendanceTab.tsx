@@ -58,11 +58,9 @@ export default function AttendanceTab({ staffId }: { staffId: string }) {
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
 
   const days = [];
-  // Empty slots for start of month
   for (let i = 0; i < firstDayOfMonth; i++) {
     days.push(null);
   }
-  // Actual days
   for (let i = 1; i <= daysInMonth; i++) {
     const dateStr = `${currentMonth}-${i.toString().padStart(2, '0')}`;
     days.push({
@@ -74,40 +72,44 @@ export default function AttendanceTab({ staffId }: { staffId: string }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PRESENT': return '#10b981'; // Green
-      case 'FULL_LEAVE': return '#ef4444'; // Red
-      case 'HALF_LEAVE': return '#f59e0b'; // Orange
-      case 'IN_PROGRESS': return '#3b82f6'; // Blue
-      default: return 'var(--border-color)'; // Grey
+      case 'PRESENT': return 'var(--brand-accent)';
+      case 'FULL_LEAVE': return 'var(--brand-secondary)';
+      case 'HALF_LEAVE': return '#f59e0b';
+      case 'IN_PROGRESS': return 'var(--brand-primary-light)';
+      default: return 'var(--glass-border)';
     }
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.25rem' }}>Attendance Calendar</h2>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <button className="btn" style={{ padding: '0.25rem 0.5rem' }} onClick={() => {
+    <section className="glass animate-slide-up" style={{ padding: '2.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+        <div>
+           <h2 style={{ fontSize: '1.75rem' }} className="text-gradient">Timekeeping Calendar</h2>
+           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Historical deployment and absence audit.</p>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '0.4rem', borderRadius: '14px', border: '1px solid var(--glass-border)' }}>
+          <button className="btn-modern btn-secondary" style={{ padding: '0.4rem 0.8rem', minWidth: 'auto', borderRadius: '10px' }} onClick={() => {
             const d = new Date(year, month - 2);
             setCurrentMonth(d.toISOString().slice(0, 7));
-          }}>&larr;</button>
+          }}>←</button>
           <input 
             type="month" 
-            className="input-base" 
-            style={{ width: 'auto', padding: '0.25rem 0.5rem' }} 
+            className="input-modern" 
+            style={{ width: 'auto', padding: '0.4rem 0.8rem', border: 'none', background: 'transparent', fontWeight: '700' }} 
             value={currentMonth} 
             onChange={(e) => setCurrentMonth(e.target.value)} 
           />
-          <button className="btn" style={{ padding: '0.25rem 0.5rem' }} onClick={() => {
+          <button className="btn-modern btn-secondary" style={{ padding: '0.4rem 0.8rem', minWidth: 'auto', borderRadius: '10px' }} onClick={() => {
             const d = new Date(year, month);
             setCurrentMonth(d.toISOString().slice(0, 7));
-          }}>&rarr;</button>
+          }}>→</button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-          <div key={d} style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '0.75rem', color: 'var(--text-secondary)', padding: '0.5rem' }}>{d}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.75rem' }}>
+        {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(d => (
+          <div key={d} style={{ textAlign: 'center', fontWeight: '800', fontSize: '0.7rem', color: 'var(--text-muted)', padding: '0.5rem', letterSpacing: '0.1em' }}>{d}</div>
         ))}
         {days.map((day, i) => (
           <div 
@@ -115,85 +117,114 @@ export default function AttendanceTab({ staffId }: { staffId: string }) {
             onClick={() => { if(day) { setSelectedDate(day); setIsLeaveModalOpen(true); } }}
             style={{ 
               aspectRatio: '1', 
-              border: '1px solid var(--border-color)', 
-              borderRadius: '8px', 
-              padding: '0.5rem',
+              border: '1px solid var(--glass-border)', 
+              borderRadius: '16px', 
+              padding: '0.75rem',
               cursor: day ? 'pointer' : 'default',
-              background: day?.data ? `${getStatusColor(day.data.status)}15` : 'transparent',
-              borderColor: day?.data ? getStatusColor(day.data.status) : 'var(--border-color)',
+              background: day?.data ? `${getStatusColor(day.data.status)}10` : 'rgba(255,255,255,0.01)',
+              borderColor: day?.data ? getStatusColor(day.data.status) : 'var(--glass-border)',
               position: 'relative',
-              transition: 'all 0.2s'
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.1rem',
+              fontWeight: '700',
+              color: day?.data ? 'var(--text-main)' : 'var(--text-muted)',
+              opacity: day ? 1 : 0
             }}
+            className={day ? "glass-hover" : ""}
           >
-            {day && (
-              <>
-                <span style={{ fontSize: '0.875rem' }}>{day.day}</span>
-                {day.data && (
-                  <div style={{ 
-                    position: 'absolute', 
-                    bottom: '0.5rem', 
-                    right: '0.5rem', 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    background: getStatusColor(day.data.status) 
-                  }} />
-                )}
-              </>
+            {day?.day}
+            {day?.data && (
+              <div style={{ 
+                position: 'absolute', 
+                bottom: '0.5rem', 
+                width: '6px', 
+                height: '6px', 
+                borderRadius: '50%', 
+                background: getStatusColor(day.data.status),
+                boxShadow: `0 0 10px ${getStatusColor(day.data.status)}`
+              }} />
             )}
           </div>
         ))}
       </div>
 
-      <div style={{ marginTop: '2rem', display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', justifyContent: 'center' }}>
-        <LegendItem color="#10b981" label="Present" />
-        <LegendItem color="#f59e0b" label="Half Day" />
-        <LegendItem color="#ef4444" label="Full Leave" />
-        <LegendItem color="#3b82f6" label="In Progress" />
+      <div style={{ marginTop: '2.5rem', display: 'flex', gap: '2rem', fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-muted)', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <LegendItem color="var(--brand-accent)" label="DEPLOYED" />
+        <LegendItem color="#f59e0b" label="PARTIAL LEAVE" />
+        <LegendItem color="var(--brand-secondary)" label="ABSENT" />
+        <LegendItem color="var(--brand-primary-light)" label="IN PROGRESS" />
       </div>
 
       {/* Date Detail / Leave Modal */}
       {isLeaveModalOpen && selectedDate && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', background: 'var(--background-base)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2>Details for {new Date(selectedDate.fullDate).toLocaleDateString()}</h2>
-              <button onClick={() => setIsLeaveModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', color: 'var(--text-secondary)' }}>&times;</button>
+        <div className="modal-overlay" onClick={() => setIsLeaveModalOpen(false)}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '420px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <div>
+                <h2 className="text-gradient" style={{ fontSize: '1.5rem' }}>Audit: {new Date(selectedDate.fullDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</h2>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Security and deployment status.</p>
+              </div>
+              <button onClick={() => setIsLeaveModalOpen(false)} className="modal-close">&times;</button>
             </div>
             
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '2rem' }}>
               {selectedDate.data ? (
-                <div style={{ background: 'var(--background-surface)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
-                  <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Status: {selectedDate.data.status}</p>
-                  {selectedDate.data.startTime && <p>Start: {new Date(selectedDate.data.startTime).toLocaleTimeString()}</p>}
-                  {selectedDate.data.endTime && <p>End: {new Date(selectedDate.data.endTime).toLocaleTimeString()}</p>}
-                  {selectedDate.data.workHours && <p>Work Hours: {selectedDate.data.workHours}h</p>}
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)', marginBottom: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-muted)' }}>STATUS</span>
+                    <span style={{ fontWeight: '800', color: getStatusColor(selectedDate.data.status) }}>{selectedDate.data.status}</span>
+                  </div>
+                  {selectedDate.data.startTime && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>CLOCK IN</span>
+                      <span style={{ fontWeight: '600' }}>{new Date(selectedDate.data.startTime).toLocaleTimeString()}</span>
+                    </div>
+                  )}
+                  {selectedDate.data.endTime && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>CLOCK OUT</span>
+                      <span style={{ fontWeight: '600' }}>{new Date(selectedDate.data.endTime).toLocaleTimeString()}</span>
+                    </div>
+                  )}
+                  {selectedDate.data.workHours && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>TOTAL DURATION</span>
+                      <span style={{ fontWeight: '800', color: 'var(--brand-primary-light)' }}>{selectedDate.data.workHours} HRS</span>
+                    </div>
+                  )}
                 </div>
               ) : (
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>No attendance data for this day.</p>
+                <div style={{ padding: '2rem', textAlign: 'center', border: '1px dashed var(--glass-border)', borderRadius: 'var(--radius-md)', marginBottom: '2rem' }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No activity logs for this cycle.</p>
+                </div>
               )}
 
-              <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>Admin Controls</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <button className="btn" style={{ background: '#ef4444', flex: 1 }} onClick={() => handleMarkLeave('FULL')}>Full Leave</button>
-                <button className="btn" style={{ background: '#f59e0b', flex: 1 }} onClick={() => handleMarkLeave('HALF')}>Half Leave</button>
+              <h3 style={{ fontSize: '0.8rem', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '0.1em', marginBottom: '1.25rem', textTransform: 'uppercase' }}>Administrative Override</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <button className="btn-modern" style={{ background: 'rgba(244, 63, 94, 0.1)', color: 'var(--brand-secondary)', border: '1px solid rgba(244, 63, 94, 0.2)' }} onClick={() => handleMarkLeave('FULL')}>Full Absence</button>
+                  <button className="btn-modern" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.2)' }} onClick={() => handleMarkLeave('HALF')}>Partial Leave</button>
+                </div>
                 {selectedDate.data?.status.includes('LEAVE') && (
-                   <button className="btn" style={{ background: 'var(--background-surface-hover)', color: 'var(--text-primary)', width: '100%' }} onClick={handleDeleteLeave}>Remove Leave</button>
+                   <button className="btn-modern btn-secondary" style={{ width: '100%' }} onClick={handleDeleteLeave}>Purge Leave Override</button>
                 )}
               </div>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: color }} />
-      <span>{label}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 8px ${color}` }} />
+      <span style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>{label}</span>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function FinancialsManagement() {
   const [advances, setAdvances] = useState<any[]>([]);
@@ -83,158 +84,184 @@ export default function FinancialsManagement() {
   });
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Financials & Payroll</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Manage advances and track employee financial records.</p>
+          <h1 className="text-gradient" style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>Financial Ledger</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Track advances, salary disbursements, and personnel liquidity.</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn btn-secondary">
-            Calculate Payroll
-          </button>
-          <button className="btn" onClick={() => setIsModalOpen(true)}>
-            + Add Advance
+          <Link href="/admin/payroll" className="btn-modern btn-secondary">
+             Payroll Engine
+          </Link>
+          <button className="btn-modern btn-primary" onClick={() => setIsModalOpen(true)}>
+            <span style={{ fontSize: '1.2rem' }}>+</span> Log Advance
           </button>
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
-        {/* Active Advances (Settlement Pending) */}
-        <div className="glass-panel">
-          <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Advances Pending Settlement</h2>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Staff</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Amount</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Date</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activeAdvances.map((adv: any) => (
-                <tr key={adv.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                  <td style={{ padding: '1rem 0', fontWeight: '500' }}>{adv.staff?.name}</td>
-                  <td style={{ padding: '1rem 0', color: 'var(--brand-secondary)', fontWeight: 'bold' }}>-₹{adv.amount}</td>
-                  <td style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>{new Date(adv.date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                      <button onClick={() => { setEditingAdv(adv); setIsEditModalOpen(true); }} style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', fontSize: '0.875rem' }}>Edit</button>
-                      <button onClick={() => toggleActive(adv)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.875rem' }}>Mark Inactive</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {activeAdvances.length === 0 && (
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2.5rem' }}>
+        {/* Active Advances */}
+        <section>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem' }}>Pending Settlements</h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Outstanding advances that will be deducted in the next payroll cycle.</p>
+          </div>
+          
+          <div className="table-container glass">
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan={4} style={{ padding: '2rem 0', textAlign: 'center', color: 'var(--text-secondary)' }}>No active advances pending.</td>
+                  <th>Personnel Member</th>
+                  <th>Outstanding Amount</th>
+                  <th>Disbursement Date</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {activeAdvances.map((adv: any) => (
+                  <tr key={adv.id}>
+                    <td style={{ fontWeight: '600' }}>{adv.staff?.name}</td>
+                    <td style={{ color: 'var(--brand-secondary)', fontWeight: '800' }}>-₹{adv.amount}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(adv.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                        <button onClick={() => { setEditingAdv(adv); setIsEditModalOpen(true); }} style={{ background: 'none', border: 'none', color: 'var(--brand-primary-light)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}>Adjust</button>
+                        <button onClick={() => toggleActive(adv)} style={{ background: 'none', border: 'none', color: 'var(--brand-secondary)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', opacity: 0.7 }}>Void</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {activeAdvances.length === 0 && (
+                  <tr>
+                    <td colSpan={4} style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>💎</div>
+                      All clear! No pending advances at the moment.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
         {/* History Section */}
-        <div className="glass-panel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem' }}>Advance Payment History</h2>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <select className="input-base" style={{ width: 'auto', padding: '0.5rem' }} value={filterStaffId} onChange={(e) => setFilterStaffId(e.target.value)}>
-                <option value="">All Staff</option>
+        <section>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+               <h2 style={{ fontSize: '1.5rem' }}>Transaction History</h2>
+               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Archive of all financial movements.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <select className="input-modern" style={{ width: 'auto', padding: '0.5rem 1rem' }} value={filterStaffId} onChange={(e) => setFilterStaffId(e.target.value)}>
+                <option value="">All Personnel</option>
                 {staffList.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
-              <input type="month" className="input-base" style={{ width: 'auto', padding: '0.5rem' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} />
+              <input type="month" className="input-modern" style={{ width: 'auto', padding: '0.5rem 1rem' }} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} />
             </div>
           </div>
           
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Staff</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Amount</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Date</th>
-                <th style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {historyAdvances.map((adv: any) => (
-                <tr key={adv.id} style={{ borderBottom: '1px solid var(--border-color)', opacity: adv.isActive ? 1 : 0.5 }}>
-                  <td style={{ padding: '1rem 0' }}>{adv.staff?.name}</td>
-                  <td style={{ padding: '1rem 0' }}>₹{adv.amount}</td>
-                  <td style={{ padding: '1rem 0' }}>{new Date(adv.date).toLocaleDateString()}</td>
-                  <td style={{ padding: '1rem 0' }}>
-                    <span style={{ 
-                      fontSize: '0.75rem', 
-                      background: adv.isActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(100, 116, 139, 0.1)', 
-                      color: adv.isActive ? '#10b981' : '#64748b',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      border: `1px solid ${adv.isActive ? '#10b981' : '#64748b'}`
-                    }}>
-                      {adv.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
+          <div className="table-container glass">
+            <table>
+              <thead>
+                <tr>
+                  <th>Personnel</th>
+                  <th>Amount</th>
+                  <th>Transaction Date</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {historyAdvances.map((adv: any) => (
+                  <tr key={adv.id} style={{ opacity: adv.isActive ? 1 : 0.4 }}>
+                    <td style={{ fontWeight: '500' }}>{adv.staff?.name}</td>
+                    <td style={{ fontWeight: '700' }}>₹{adv.amount}</td>
+                    <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{new Date(adv.date).toLocaleDateString()}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                         <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: adv.isActive ? 'var(--brand-accent)' : 'var(--text-muted)' }}></div>
+                         <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                           {adv.isActive ? 'Active' : 'Voided'}
+                         </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
 
-      {/* Add Advance Modal */}
+      {/* Modern Add Advance Modal */}
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', background: 'var(--background-base)' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>Log Advance Payment</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '420px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+               <h2 className="text-gradient" style={{ fontSize: '1.75rem' }}>Log Advance</h2>
+               <button onClick={() => setIsModalOpen(false)} className="modal-close">&times;</button>
+            </div>
+            
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Select Staff</label>
-                <select name="staffId" required className="input-base" value={formData.staffId} onChange={(e) => setFormData({...formData, staffId: e.target.value})}>
-                  <option value="">Select Staff Member...</option>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Personnel Selection</label>
+                <select name="staffId" required className="input-modern" value={formData.staffId} onChange={(e) => setFormData({...formData, staffId: e.target.value})}>
+                  <option value="">Choose Staff Member...</option>
                   {staffList.map((s: any) => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Amount (₹)</label>
-                <input name="amount" required type="number" step="0.01" className="input-base" placeholder="50.00" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} />
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Advance Amount (₹)</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>₹</span>
+                  <input name="amount" required type="number" step="0.01" className="input-modern" style={{ paddingLeft: '2rem' }} placeholder="0.00" value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} />
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn" style={{ flex: 1 }}>Confirm Advance</button>
-              </div>
+              
+              <button type="submit" className="btn-modern btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+                Authorize Disbursement
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* Edit Advance Modal */}
+      {/* Modern Edit Advance Modal */}
       {isEditModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', background: 'var(--background-base)' }}>
-            <h2 style={{ marginBottom: '1.5rem' }}>Edit Advance Record</h2>
-            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="modal-overlay" onClick={() => { setIsEditModalOpen(false); setEditingAdv(null); }}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '420px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+               <h2 className="text-gradient" style={{ fontSize: '1.75rem' }}>Adjust Record</h2>
+               <button onClick={() => { setIsEditModalOpen(false); setEditingAdv(null); }} className="modal-close">&times;</button>
+            </div>
+
+            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)', marginBottom: '1.5rem' }}>
+               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>TARGET PERSONNEL</p>
+               <p style={{ fontWeight: '700', fontSize: '1.1rem' }}>{editingAdv?.staff?.name}</p>
+            </div>
+
+            <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Staff: {editingAdv?.staff?.name}</p>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-muted)' }}>Revised Amount (₹)</label>
+                <div style={{ position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>₹</span>
+                  <input 
+                    name="amount" 
+                    required 
+                    type="number" 
+                    step="0.01" 
+                    className="input-modern" 
+                    style={{ paddingLeft: '2rem' }}
+                    value={editingAdv?.amount || ""} 
+                    onChange={(e) => setEditingAdv({...editingAdv, amount: e.target.value})} 
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Amount (₹)</label>
-                <input 
-                  name="amount" 
-                  required 
-                  type="number" 
-                  step="0.01" 
-                  className="input-base" 
-                  value={editingAdv?.amount || ""} 
-                  onChange={(e) => setEditingAdv({...editingAdv, amount: e.target.value})} 
-                />
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" className="btn btn-secondary" style={{ flex: 1 }} onClick={() => { setIsEditModalOpen(false); setEditingAdv(null); }}>Cancel</button>
-                <button type="submit" className="btn" style={{ flex: 1 }}>Save Changes</button>
-              </div>
+              <button type="submit" className="btn-modern btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+                Update Ledger Record
+              </button>
             </form>
           </div>
         </div>

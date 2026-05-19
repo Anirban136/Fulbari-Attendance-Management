@@ -12,12 +12,14 @@ interface DashboardStatsProps {
   activeStaff: StaffInfo[];
   onBreakStaff: StaffInfo[];
   pendingAdvances: StaffInfo[];
+  totalMonthlyExpense: number;
 }
 
 export default function DashboardStats({
   activeStaff,
   onBreakStaff,
   pendingAdvances,
+  totalMonthlyExpense,
 }: DashboardStatsProps) {
   const [modalData, setModalData] = useState<{
     title: string;
@@ -26,110 +28,113 @@ export default function DashboardStats({
 
   const stats = [
     {
-      label: "Active Staff Today",
+      label: "Active Staff",
       count: activeStaff.length,
       data: activeStaff,
-      color: "var(--brand-primary)",
-      isGradient: true,
+      icon: "⚡",
+      gradient: "linear-gradient(135deg, #6366f1, #818cf8)"
     },
     {
       label: "On Break",
       count: onBreakStaff.length,
       data: onBreakStaff,
-      color: "var(--brand-secondary)",
-      isGradient: true,
+      icon: "☕",
+      gradient: "linear-gradient(135deg, #f59e0b, #fbbf24)"
+    },
+    {
+      label: "Monthly Salary Paid",
+      count: `₹${totalMonthlyExpense.toLocaleString()}`,
+      data: [],
+      icon: "💳",
+      gradient: "linear-gradient(135deg, #10b981, #34d399)",
+      noModal: true
     },
     {
       label: "Pending Advances",
       count: pendingAdvances.length,
       data: pendingAdvances,
-      color: "var(--brand-secondary)",
-      isGradient: false,
+      icon: "💰",
+      gradient: "linear-gradient(135deg, #f43f5e, #fb7185)"
     },
   ];
 
   return (
     <>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      <div className="grid-auto">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="glass-panel text-center"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.5rem",
-              cursor: "pointer",
-              transition: "transform 0.2s, border-color 0.2s",
-            }}
-            onClick={() => setModalData({ title: stat.label, staff: stat.data })}
+            className="glass glass-hover stat-card"
+            style={{ cursor: stat.noModal ? "default" : "pointer", position: 'relative', overflow: 'hidden' }}
+            onClick={() => !stat.noModal && setModalData({ title: stat.label, staff: stat.data })}
           >
-            <h3 style={{ color: "var(--text-secondary)", fontSize: "1rem" }}>
-              {stat.label}
-            </h3>
-            <p
-              className={stat.isGradient ? "text-gradient" : ""}
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "bold",
-                margin: "0",
-                color: stat.isGradient ? undefined : stat.color,
-              }}
-            >
+            <div style={{ 
+              position: 'absolute', 
+              top: '-10px', 
+              right: '-10px', 
+              fontSize: '4rem', 
+              opacity: 0.05,
+              transform: 'rotate(15deg)'
+            }}>
+              {stat.icon}
+            </div>
+            
+            <span className="stat-label">{stat.label}</span>
+            <span className="stat-value" style={{ 
+              background: stat.gradient,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
               {stat.count}
-            </p>
+            </span>
+            
+            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', fontWeight: '600', color: 'var(--brand-primary-light)' }}>
+              VIEW DETAILS →
+            </div>
           </div>
         ))}
       </div>
 
       {modalData && (
         <div className="modal-overlay" onClick={() => setModalData(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="glass modal-content animate-slide-up" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
             <button className="modal-close" onClick={() => setModalData(null)}>
               &times;
             </button>
-            <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
+            <h2 style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }} className="text-gradient">
               {modalData.title}
             </h2>
-            <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
-              Listing all staff members in this category.
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: '2rem' }}>
+              Real-time snapshot of personnel status.
             </p>
 
-            <ul className="staff-list">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {modalData.staff.length > 0 ? (
                 modalData.staff.map((s) => (
-                  <li key={s.id} className="staff-item">
-                    <span style={{ fontWeight: "500" }}>{s.name}</span>
+                  <div key={s.id} style={{ 
+                    padding: '1rem', 
+                    background: 'rgba(255,255,255,0.03)', 
+                    borderRadius: 'var(--radius-md)', 
+                    border: '1px solid var(--glass-border)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.25rem'
+                  }}>
+                    <span style={{ fontWeight: "600", fontSize: '1rem' }}>{s.name}</span>
                     {s.extra && (
-                      <span
-                        style={{
-                          fontSize: "0.875rem",
-                          color: "var(--text-secondary)",
-                        }}
-                      >
+                      <span style={{ fontSize: "0.8rem", color: "var(--brand-primary-light)", fontWeight: '500' }}>
                         {s.extra}
                       </span>
                     )}
-                  </li>
+                  </div>
                 ))
               ) : (
-                <li
-                  style={{
-                    textAlign: "center",
-                    padding: "2rem",
-                    color: "var(--text-secondary)",
-                  }}
-                >
-                  No staff members found.
-                </li>
+                <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🍃</div>
+                  <p style={{ color: "var(--text-muted)" }}>No staff members in this category.</p>
+                </div>
               )}
-            </ul>
+            </div>
           </div>
         </div>
       )}

@@ -19,6 +19,9 @@ export async function GET(
       where: { id },
       include: {
         slot: true,
+        fingerprints: {
+          orderBy: { enrolledAt: 'desc' }
+        },
         attendances: {
           where: {
             shiftDate: {

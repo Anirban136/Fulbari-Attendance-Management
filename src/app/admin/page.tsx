@@ -41,7 +41,7 @@ export default async function AdminDashboard() {
   });
 
   const recentActivity = await prisma.attendanceRecord.findMany({
-    take: 5,
+    take: 8,
     orderBy: { updatedAt: 'desc' },
     include: {
       staff: {
@@ -73,7 +73,6 @@ export default async function AdminDashboard() {
     };
   });
   
-  // Calculate high advance alerts
   const staffAdvancesMap = new Map<string, { name: string, total: number, salary: number }>();
   pendingAdvancesRecords.forEach(a => {
     const existing = staffAdvancesMap.get(a.staffId) || { name: a.staff.name, total: 0, salary: a.staff.monthlySalary };
@@ -94,68 +93,90 @@ export default async function AdminDashboard() {
     extra: `₹${a.amount}` 
   }));
 
+  const currentMonthYear = today.toISOString().slice(0, 7);
+  const releasedSalaries = await prisma.payrollRecord.findMany({
+    where: { monthYear: currentMonthYear }
+  });
+  const totalMonthlyExpense = releasedSalaries.reduce((acc, curr) => acc + curr.finalPayable, 0);
+
   const formatState = (state: string) => {
     switch (state) {
-      case 'SHIFT_STARTED': return <span style={{ color: 'var(--brand-primary)' }}>Shift Started</span>;
-      case 'ON_BREAK': return <span style={{ color: 'var(--brand-secondary)' }}>On Break</span>;
-      case 'SHIFT_ENDED': return <span style={{ color: '#ef4444' }}>Shift Ended</span>;
-      default: return <span style={{ color: 'var(--text-secondary)' }}>Not Started</span>;
+      case 'SHIFT_STARTED': return <span style={{ color: 'var(--brand-primary-light)', fontWeight: '600' }}>Shift Started</span>;
+      case 'ON_BREAK': return <span style={{ color: '#f59e0b', fontWeight: '600' }}>On Break</span>;
+      case 'SHIFT_ENDED': return <span style={{ color: 'var(--brand-secondary)', fontWeight: '600' }}>Shift Ended</span>;
+      default: return <span style={{ color: 'var(--text-muted)' }}>Not Started</span>;
     }
   };
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Overview</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Welcome to the Fulbari Restora Administrator Dashboard.</p>
+          <h1 className="text-gradient" style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>Executive Overview</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Welcome to the Fulbari Restora intelligence hub.</p>
         </div>
-        <button className="btn">
-          Export Report
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button className="btn-modern btn-secondary">
+             Sync Data
+          </button>
+          <button className="btn-modern btn-primary">
+            Export Report
+          </button>
+        </div>
       </header>
       
       <EmergencyPopup alerts={highAdvanceAlerts} />
 
-      {/* Stats Cards */}
       <DashboardStats 
         activeStaff={activeStaff}
         onBreakStaff={onBreakStaff}
         pendingAdvances={pendingAdvances}
+        totalMonthlyExpense={totalMonthlyExpense}
       />
 
-      {/* Recent Activity Table */}
-      <div className="glass-panel">
-        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Recent Attendance Activity</h2>
+      <section>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.5rem' }}>Recent Attendance Activity</h2>
+          <button style={{ background: 'none', border: 'none', color: 'var(--brand-primary-light)', fontWeight: '600', cursor: 'pointer' }}>View All Activity</button>
+        </div>
         
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', fontWeight: '500' }}>Staff</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', fontWeight: '500' }}>Slot</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', fontWeight: '500' }}>Action</th>
-              <th style={{ padding: '1rem 0', color: 'var(--text-secondary)', fontWeight: '500' }}>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentActivity.map((activity) => (
-              <tr key={activity.id} style={{ borderBottom: 'auto' }}>
-                <td style={{ padding: '1rem 0' }}>{activity.staff.name}</td>
-                <td style={{ padding: '1rem 0' }}>{activity.staff.slot.name}</td>
-                <td style={{ padding: '1rem 0' }}>{formatState(activity.state)}</td>
-                <td style={{ padding: '1rem 0', color: 'var(--text-secondary)' }}>
-                  {new Date(activity.updatedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
-                </td>
-              </tr>
-            ))}
-            {recentActivity.length === 0 && (
+        <div className="table-container glass">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={4} style={{ padding: '1rem 0', textAlign: 'center', color: 'var(--text-secondary)' }}>No recent activity today.</td>
+                <th>Staff Member</th>
+                <th>Assignment Slot</th>
+                <th>Current Status</th>
+                <th>Last Update</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {recentActivity.map((activity) => (
+                <tr key={activity.id}>
+                  <td style={{ fontWeight: '600' }}>{activity.staff.name}</td>
+                  <td>
+                    <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.8rem' }}>
+                      {activity.staff.slot.name}
+                    </span>
+                  </td>
+                  <td>{formatState(activity.state)}</td>
+                  <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    {new Date(activity.updatedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                </tr>
+              ))}
+              {recentActivity.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📭</div>
+                    No activity recorded for today yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

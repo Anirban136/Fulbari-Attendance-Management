@@ -26,75 +26,98 @@ export default function AdminLayout({
   };
 
   const navLinks = [
-    { name: "Dashboard", href: "/admin" },
-    { name: "Staff Management", href: "/admin/staff" },
-    { name: "Slot management", href: "/admin/qr" },
-    { name: "Financials", href: "/admin/financials" },
-    { name: "Payroll Engine", href: "/admin/payroll" },
+    { name: "Dashboard", href: "/admin", icon: "📊" },
+    { name: "Staff", href: "/admin/staff", icon: "👥" },
+    { name: "Slots", href: "/admin/qr", icon: "👆" },
+    { name: "Financials", href: "/admin/financials", icon: "💰" },
+    { name: "Payroll", href: "/admin/payroll", icon: "📑" },
   ];
 
   return (
-    <div className={`admin-layout animate-fade-in ${isLightTheme ? "light-theme" : ""}`}>
-      {/* Sidebar */}
-      <aside className="admin-sidebar glass-panel" style={{ borderRadius: 0, borderTop: 'none', borderBottom: 'none', borderLeft: 'none' }}>
-        <h2 className="text-gradient" style={{ marginBottom: "1rem" }}>
-          Fulbari Restora
-        </h2>
-
-        {/* Theme Toggle */}
-        <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          <span>Dark</span>
-          <div 
-            onClick={toggleTheme}
-            style={{ 
-              width: '40px', 
-              height: '20px', 
-              background: 'var(--background-surface-hover)', 
-              borderRadius: '20px', 
-              position: 'relative', 
-              cursor: 'pointer',
-              border: '1px solid var(--border-color)'
-            }}
-          >
-            <div style={{ 
-              width: '16px', 
-              height: '16px', 
-              background: 'var(--brand-primary)', 
-              borderRadius: '50%', 
-              position: 'absolute', 
-              top: '1px', 
-              left: isLightTheme ? '21px' : '2px',
-              transition: 'left 0.2s ease-in-out'
-            }} />
-          </div>
-          <span>Light</span>
+    <div className={`admin-shell animate-slide-up ${isLightTheme ? "light-theme" : ""}`}>
+      <div className="bg-mesh" />
+      
+      {/* Sidebar - Hidden on Mobile */}
+      <aside className="sidebar-modern glass" style={{ borderRadius: 0, borderTop: 'none', borderBottom: 'none', borderLeft: 'none' }}>
+        <div style={{ padding: '0 0.5rem 2rem 0.5rem' }}>
+          <h2 className="text-gradient" style={{ fontSize: '1.75rem', fontWeight: '800' }}>
+            Fulbari
+          </h2>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600', letterSpacing: '0.1em' }}>CONTROL CENTER</p>
         </div>
-        
-        <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+
+        <nav style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           {navLinks.map((link) => (
             <Link 
               key={link.href}
               href={link.href} 
-              className={`nav-link ${pathname === link.href ? "active" : ""}`}
+              className={`sidebar-link ${pathname === link.href ? "active" : ""}`}
             >
-              {link.name}
+              <span style={{ fontSize: '1.25rem' }}>{link.icon}</span>
+              <span>{link.name}</span>
             </Link>
           ))}
-          <Link href="/kiosk" className="nav-link" target="_blank">
-            Kiosk View ↗
-          </Link>
         </nav>
 
-        <div style={{ marginTop: "auto" }}>
-          <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-            Admin Logged In
-          </p>
+        <div style={{ marginTop: '2rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1rem' }}>
+             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{isLightTheme ? 'Light' : 'Dark'} Mode</span>
+             <div 
+              onClick={toggleTheme}
+              style={{ 
+                width: '44px', 
+                height: '24px', 
+                background: 'rgba(255,255,255,0.05)', 
+                borderRadius: '20px', 
+                position: 'relative', 
+                cursor: 'pointer',
+                border: '1px solid var(--glass-border)'
+              }}
+            >
+              <div style={{ 
+                width: '18px', 
+                height: '18px', 
+                background: 'var(--brand-primary)', 
+                borderRadius: '50%', 
+                position: 'absolute', 
+                top: '2px', 
+                left: isLightTheme ? '22px' : '2px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 0 10px rgba(99, 102, 241, 0.5)'
+              }} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "auto", padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '10px', height: '10px', background: 'var(--brand-accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--brand-accent)' }}></div>
+            <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>System Live</span>
+          </div>
+          <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>v2.4.0-stable</p>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="admin-main">
-        {children}
+      {/* Floating Mobile Bottom Nav */}
+      <div className="bottom-nav-modern">
+        {navLinks.slice(0, 4).map((link) => (
+          <Link 
+            key={link.href}
+            href={link.href} 
+            className={`sidebar-link ${pathname === link.href ? "active" : ""}`}
+            style={{ flexDirection: 'column', gap: '4px', padding: '0.5rem', flex: 1, borderRadius: '20px' }}
+          >
+            <span style={{ fontSize: '1.25rem' }}>{link.icon}</span>
+            <span style={{ fontSize: '0.6rem' }}>{link.name}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* Main Content Area */}
+      <main className="main-content">
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          {children}
+        </div>
       </main>
     </div>
   );

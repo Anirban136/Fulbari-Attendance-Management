@@ -5,9 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Outlet {
@@ -55,6 +54,19 @@ model StaffProfile {
   payrolls            PayrollRecord[]
   documents           EmployeeDocument[]
   leaves              LeaveRecord[]
+  authenticators      Authenticator[]
+  fingerprints        FingerprintTemplate[]
+}
+
+model FingerprintTemplate {
+  id              String   @id @default(uuid())
+  staffId         String
+  templateData    String   // Base64 encoded fingerprint capture data from MFS110
+  fingerIndex     String   @default("RIGHT_INDEX") // Which finger: RIGHT_INDEX, LEFT_INDEX, RIGHT_THUMB, etc.
+  deviceInfo      String?  // Scanner device info for reference
+  enrolledAt      DateTime @default(now())
+
+  staff           StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
 }
 
 model EmployeeDocument {
@@ -123,10 +135,24 @@ model PayrollRecord {
   advancesDeducted    Float
   createdAt           DateTime @default(now())
 
-  staff               StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
-}
+  staff                StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  }
 
-model AuditLog {
+  model Authenticator {
+  id                   String   @id @default(uuid())
+  credentialID         Bytes    @unique
+  credentialPublicKey  Bytes
+  counter              BigInt
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?  // JSON list
+  createdAt            DateTime @default(now())
+
+  staffId              String
+  staff                StaffProfile @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  }
+
+  model AuditLog {
   id                  String   @id @default(uuid())
   action              String   // e.g., "STAFF_CREATED", "PAYROLL_FINALIZED"
   entityType          String

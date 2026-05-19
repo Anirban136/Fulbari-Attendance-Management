@@ -24,52 +24,67 @@ export default function AdvancesTab({ staffId }: { staffId: string }) {
     fetchAdvances();
   }, [staffId]);
 
-  if (loading) return <div>Loading advances...</div>;
+  if (loading) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>Retrieving financial history...</div>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div className="glass-panel" style={{ padding: '1.5rem', background: 'var(--background-surface)' }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Current Running Balance</p>
-        <h2 style={{ fontSize: '1.5rem', color: '#f59e0b' }}>₹{summary?.totalBalance || 0}</h2>
+    <div className="animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="glass" style={{ padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: '700', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>CURRENT DEBT EXPOSURE</p>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: '800' }} className="text-gradient">₹{summary?.totalBalance || 0}</h2>
+        </div>
+        <div style={{ padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '16px', fontSize: '2rem' }}>
+          💰
+        </div>
       </div>
 
-      <div className="glass-panel">
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <th style={{ padding: '1rem', color: 'var(--text-secondary)' }}>Date</th>
-              <th style={{ padding: '1rem', color: 'var(--text-secondary)' }}>Amount</th>
-              <th style={{ padding: '1rem', color: 'var(--text-secondary)' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {advances.map((adv: any) => (
-              <tr key={adv.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <td style={{ padding: '1rem' }}>{new Date(adv.date).toLocaleDateString()}</td>
-                <td style={{ padding: '1rem', fontWeight: 'bold' }}>₹{adv.amount}</td>
-                <td style={{ padding: '1rem' }}>
-                  <span style={{ 
-                    padding: '2px 8px', 
-                    borderRadius: '4px', 
-                    fontSize: '0.75rem', 
-                    background: adv.status === 'PENDING' ? '#fef3c7' : '#d1fae5', 
-                    color: adv.status === 'PENDING' ? '#92400e' : '#065f46' 
-                  }}>
-                    {adv.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {advances.length === 0 && (
+      <section>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <h3 style={{ fontSize: '1.25rem' }}>Transaction History</h3>
+        </div>
+        <div className="table-container glass">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  No advance history found.
-                </td>
+                <th>Disbursement Date</th>
+                <th>Principal Amount</th>
+                <th>Settlement Status</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {advances.map((adv: any) => (
+                <tr key={adv.id}>
+                  <td>{new Date(adv.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                  <td style={{ fontWeight: '700' }}>₹{adv.amount}</td>
+                  <td>
+                    <span style={{ 
+                      padding: '0.3rem 0.8rem', 
+                      borderRadius: '100px', 
+                      fontSize: '0.7rem', 
+                      fontWeight: '800',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      background: adv.status === 'PENDING' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)', 
+                      color: adv.status === 'PENDING' ? '#f59e0b' : '#10b981',
+                      border: `1px solid ${adv.status === 'PENDING' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`
+                    }}>
+                      {adv.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {advances.length === 0 && (
+                <tr>
+                  <td colSpan={3} style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🍃</div>
+                    No financial liabilities found for this profile.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }
