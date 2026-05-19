@@ -59,24 +59,25 @@ export default async function AdminDashboard() {
   };
 
   const activeStaff = activeStaffRecords.map(r => ({ 
-    id: r.staff.id, 
-    name: r.staff.name,
-    extra: r.startTime ? `Shift started: ${r.startTime.toLocaleTimeString('en-IN', timeOptions)}` : ''
+    id: r.staff?.id || r.id, 
+    name: r.staff?.name || 'Unknown',
+    extra: r.startTime ? `Shift started: ${new Date(r.startTime).toLocaleTimeString('en-IN', timeOptions)}` : ''
   }));
   
   const onBreakStaff = onBreakStaffRecords.map(r => {
-    const latestBreak = r.breaks[0];
+    const latestBreak = r.breaks?.[0];
     return { 
-      id: r.staff.id, 
-      name: r.staff.name,
-      extra: latestBreak?.startTime ? `Break started: ${latestBreak.startTime.toLocaleTimeString('en-IN', timeOptions)}` : ''
+      id: r.staff?.id || r.id, 
+      name: r.staff?.name || 'Unknown',
+      extra: latestBreak?.startTime ? `Break started: ${new Date(latestBreak.startTime).toLocaleTimeString('en-IN', timeOptions)}` : ''
     };
   });
   
   const staffAdvancesMap = new Map<string, { name: string, total: number, salary: number }>();
   pendingAdvancesRecords.forEach(a => {
-    const existing = staffAdvancesMap.get(a.staffId) || { name: a.staff.name, total: 0, salary: a.staff.monthlySalary };
-    existing.total += a.amount;
+    if (!a.staff) return;
+    const existing = staffAdvancesMap.get(a.staffId) || { name: a.staff.name, total: 0, salary: a.staff.monthlySalary || 0 };
+    existing.total += a.amount || 0;
     staffAdvancesMap.set(a.staffId, existing);
   });
 
@@ -89,15 +90,15 @@ export default async function AdminDashboard() {
 
   const pendingAdvances = pendingAdvancesRecords.map(a => ({ 
     id: a.id, 
-    name: a.staff.name, 
-    extra: `₹${a.amount}` 
+    name: a.staff?.name || 'Unknown', 
+    extra: `₹${a.amount || 0}` 
   }));
 
   const currentMonthYear = today.toISOString().slice(0, 7);
   const releasedSalaries = await prisma.payrollRecord.findMany({
     where: { monthYear: currentMonthYear }
   });
-  const totalMonthlyExpense = releasedSalaries.reduce((acc, curr) => acc + curr.finalPayable, 0);
+  const totalMonthlyExpense = releasedSalaries.reduce((acc, curr) => acc + (curr.finalPayable || 0), 0);
 
   const formatState = (state: string) => {
     switch (state) {
@@ -131,7 +132,7 @@ export default async function AdminDashboard() {
         activeStaff={activeStaff}
         onBreakStaff={onBreakStaff}
         pendingAdvances={pendingAdvances}
-        totalMonthlyExpense={totalMonthlyExpense}
+        totalMonthlyExpense={totalMonthlyExpense || 0}
       />
 
       <section>
@@ -153,15 +154,15 @@ export default async function AdminDashboard() {
             <tbody>
               {recentActivity.map((activity) => (
                 <tr key={activity.id}>
-                  <td style={{ fontWeight: '600' }}>{activity.staff.name}</td>
+                  <td style={{ fontWeight: '600' }}>{activity.staff?.name || 'Unknown'}</td>
                   <td>
                     <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.8rem' }}>
-                      {activity.staff.slot.name}
+                      {activity.staff?.slot?.name || 'Unassigned'}
                     </span>
                   </td>
                   <td>{formatState(activity.state)}</td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                    {new Date(activity.updatedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}
+                    {activity.updatedAt ? new Date(activity.updatedAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) : ''}
                   </td>
                 </tr>
               ))}
